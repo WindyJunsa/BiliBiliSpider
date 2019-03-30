@@ -19,7 +19,7 @@ class Spider:
             self.video_api = "https://www.bilibili.com/video/av"    # 视频信息
         
 
-        def get_api(api_url):
+        def get_api(api_url):                       
 
             headers = {
                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134',
@@ -31,23 +31,23 @@ class Spider:
                  'Cache-Control': 'max-age=0',
                  'Connection': 'Keep-Alive',
                  'DNT':'1',
-                }
+                }                               #请求头信息
 
             res = requests.get(api_url, headers=headers)
 
             return res.text
         
         def get_video_info(self):
-            aid= str(random.randint(1,20000000))
+            aid= str(random.randint(1,40000000))
 
             res = Spider.get_api(self.video_api + aid)
 
-            pattern = re.compile(r'<h1 title="(.*)" class="video-title">',re.S)
+            pattern = re.compile(r'<h1 title="(.*)" class="video-title">',re.S)          #正则提取：标题
             ret1 = re.findall(pattern,res)
             str1 = ' '.join(['标题：']+ret1)
 
 
-            pattern2 = re.compile(r'<div class="info open">([\s\S]*?)</div>',re.S)
+            pattern2 = re.compile(r'<div class="info open">([\s\S]*?)</div>',re.S)       #正则提取：视频简介
             ret3 = re.findall(pattern2,res)
             str3 = ' '.join(['视频简介：']+ret3)
             if ret1==[]:

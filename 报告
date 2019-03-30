@@ -1,0 +1,35 @@
+Bilibili(www.bilibili.com，以下简称B站）是一个受诸多年轻人欢迎的视频弹幕网站，其中每个视频有一个编号，称为aid，
+本程序实现的功能就是对任意一个可观看的视频，通过其aid号码来获取其详细信息，例如观看量，点赞量，收藏量等；
+其中的弹幕列表有另一个id称为cid。
+以下为b站的部分API：
+online_api = "https://api.bilibili.com/x/web-interface/online"  # 在线人数
+video_api = "https://api.bilibili.com/x/web-interface/archive/stat?&aid=%s"    # 视频信息
+newlist_api = "https://api.bilibili.com/x/web-interface/newlist?&rid=%s&pn=%s&ps=%s"     # 最新视频信息
+region_api = "https://api.bilibili.com/x/web-interface/dynamic/region?&rid=%s&pn=%s&ps=%s"  # 最新动态信息
+member_api = "http://space.bilibili.com/ajax/member/GetInfo"  # 用户信息
+stat_api = "https://api.bilibili.com/x/relation/stat?vmid=%s"  # 用户关注数和粉丝总数
+upstat_api = "https://api.bilibili.com/x/space/upstat?mid=%s"     # 用户总播放量和总阅读量
+follower_api = "https://api.bilibili.com/x/relation/followings?vmid=%s&pn=%s&ps=%s"    # 用户关注信息
+fans_api = "https://api.bilibili.com/x/relation/followers?vmid=%s&pn=%s&ps=%s"    # 用户粉丝信息
+https://api.bilibili.com/x/player/pagelist?aid=              #得到视频cid
+https://comment.bilibili.com/cid.xml         #获取弹幕列表
+
+本程序通过点击获取信息按钮随机找到一个视频并获取其主要信息。
+其中window.py是窗口界面的主程序，bilibili_support.py是需要调用的一个支持文件，其中包括 Spider 这个类
+这当中包括两个方法，get_api()用来模拟浏览器向目标网址发送请求，并把返回的数据存为text形式（html）；
+get_video_info()用来对上一步返回的内容进行正则提取，我在程序中选择了提取 视频标题、视频id、视频简介这几个内容
+从网页的源码分析，发现标题都是这样的格式‘<h1 title="标题内容" class="video-title">’ 故把中文用（.*）替代，即可查找到视频标题。
+而视频id是我自己随机生成的，可以直接展现出来；
+最后，视频简介藏在这里 ‘<div class="info open">视频简介</div>’ ，而视频简介在不展开时的class是"info", 要全部都能匹配到，使用到的正则表达式为：
+ ‘<div class="info open">([\s\S]*?)</div>’
+另外，在目前的b站的四千多万视频总数中，有许多已经下架的视频，正常访问的话会显示404，下架原因一般是版权、视频内容问题等，
+于是在程序中，凡是找到的title为空的，就显示‘该视频已下架’，多次运行程序后发现，视频下架率是很高的，在网上查找验证后发现确实如此。
+
+
+写这个大作业花了很长时间(15h+)，其中主要时间花在了学习怎么写GUI上面，由于无法使用pyqt，我使用的是tkinter库。由于我之前从来没有
+接触过跟GUI有关的东西，这也可以算是第一次了解吧，以后就能写一些简单的GUI了。为什么要把获取视频信息改成随机的方式？个人有很强烈的
+感受便是，访问b站的时候获取的内容是网站的算法给你自动推荐的（可能是你平时关注的比较多的），你如果点进去了那么再次刷新之后，
+推荐到内容又会是相同领域的东西，这就会导致自己接收到的信息十分片面，所以很多时候我会选择刻意去点击一些无关的视频等，
+以达到欺骗算法的目的，以保证我获取到的内容不只是局限于我感兴趣的方面。所以我很喜欢谷歌的‘手气不错’按钮，这个小程序便是本着随机这个
+出发点来设计的。如果进一步要加些内容优化一下的话，我会选择获取信息之后点击确定就直接拉起浏览器而访问那个视频的页面。
+
